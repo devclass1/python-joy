@@ -1,7 +1,5 @@
-import pyqtgraph as pg
-from pyqtgraph.Qt import QtGui
+import plotly.express as px
 
-# Create dictionary of monthly sales data
 monthly_sales = {
     'January': 125000,
     'February': 98000,
@@ -10,34 +8,23 @@ monthly_sales = {
     'May': 156800
 }
 
-# Prepare data for plotting
-months = list(monthly_sales.keys())
-sales = list(monthly_sales.values())
+fig = px.bar(
+    x=list(monthly_sales.keys()),
+    y=list(monthly_sales.values()),
+    text=[f'₹{x:,}' for x in monthly_sales.values()],
+    labels={'x': 'Month', 'y': 'Sales Amount (₹)'},
+    title='Monthly Sales Report (INR)'
+)
 
-# Create the application window
-app = QtGui.QApplication([])
-win = pg.GraphicsLayoutWidget(title="Monthly Sales Report (INR)", size=(800, 600))
-win.show()
+fig.update_traces(
+    marker_color='skyblue',
+    textposition='outside'
+)
 
-# Create the plot
-plot = win.addPlot()
-plot.setLabel('left', 'Sales Amount (₹)')
-plot.setLabel('bottom', 'Month')
-plot.showGrid(x=False, y=True, alpha=0.7)
+fig.update_layout(
+    yaxis_gridcolor='lightgray',
+    yaxis_gridwidth=0.5,
+    yaxis_zeroline=False
+)
 
-# Create the bar graph
-bg = pg.BarGraphItem(x=range(len(months)), height=sales, width=0.6, brush='skyblue')
-plot.addItem(bg)
-
-# Customize x-axis with month names
-ax = plot.getAxis('bottom')
-ax.setTicks([[(i, month) for i, month in enumerate(months)]])
-
-# Add value labels on top of each bar
-for i, sale in enumerate(sales):
-    text = pg.TextItem(f'₹{sale:,}', anchor=(0.5, 0))
-    text.setPos(i, sale)
-    plot.addItem(text)
-
-# Start Qt event loop
-app.exec_()
+fig.show()
